@@ -7,7 +7,6 @@
  
 module.exports = {
 
-
   start: function (req, res) {
 
   		TwitterStreamingService.start(function(response){
