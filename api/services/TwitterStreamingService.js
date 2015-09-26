@@ -1,30 +1,33 @@
 // TwitterStreamingService.js - in api/services
 
 var Twit = require('twit')
+var AlchemyAPI = require('alchemy-api');
 
-var client = new Twit({
+var twitterClient = new Twit({
   consumer_key: sails.config.twitterconfig.consumer_key,
   consumer_secret: sails.config.twitterconfig.consumer_secret,
   access_token: sails.config.twitterconfig.access_token_key,
   access_token_secret: sails.config.twitterconfig.access_token_secret
 })
 
+var alchemyClient = new AlchemyAPI(sails.config.alchemyconfig.alchemy_key);
+
 var stream = null
 
 
 module.exports = {
 
-    start: function(callback) {
+  start: function(callback) {
 
-        stream = client.stream('statuses/sample', { language: 'en' });
+    stream = twitterClient.stream('statuses/sample', { language: 'en' });
 
-        stream.on('connected', function (response) {
+    stream.on('connected', function (response) {
 
-            callback(response);
+      callback(response);
 
-        });
+    });
 
-        stream.on('tweet', function (tweetOriginal) {
+    stream.on('tweet', function (tweetOriginal) {
 
           // Aca hay que hacer la magia de analizado
 
@@ -39,16 +42,16 @@ module.exports = {
           }).exec(function createCB(err, created){})
         });
 
-    },
+  },
 
-    stop: function(callback) {
+  stop: function(callback) {
 
-        stream.stop();
+    stream.stop();
 
-        stream.on('disconnect', function (disconnectMessage) {
+    stream.on('disconnect', function (disconnectMessage) {
 
-            callback(disconnectMessage);
-        })
-    }
+      callback(disconnectMessage);
+    })
+  }
 
 };

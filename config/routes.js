@@ -36,8 +36,8 @@ module.exports.routes = {
     view: 'homepage'
   },
 
-  'post /start': 'TweetsServiceController.start',
-  'post /stop': 'TweetsServiceController.stop'
+  'post /start': 'TweetsController.start',
+  'post /stop': 'TweetsController.stop'
 
 
 
