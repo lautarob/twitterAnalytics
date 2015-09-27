@@ -14,7 +14,27 @@ module.exports = {
 
             // Aca hay que hacer la magia de analizado sobre alchemy
 
-            returnCallback(tweetProcessed);
+            //Elegir las taxonomies o temas mas importanes bajo algun criterio y separar las taxonomies que tienen barras
+            //Entidades meterlas todas
+            //Keywords meterlas todas
+            //Categoria meterla
+
+            var tweet = TweetsProcessed.create({
+                userName: '',
+                originalText: '',
+                topics: [],
+                entities: [],
+                hashTags: [],
+                persons: [],
+                geography: [],
+                twitterUsers: [],
+                keyWords: [],
+                posted_at: '',
+                country: '',
+                filter_id: ''
+            });
+
+            returnCallback(tweet);
 
         })
 

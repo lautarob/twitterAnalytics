@@ -11,8 +11,8 @@ module.exports = {
 
   	userName: { type: 'string'},
   	originalText: { type: 'string'},
-  	processedText: { type: 'string'},
   	topics: { type: 'array'},
+    entities: { type: 'array'},
   	hashTags: { type: 'array'},
   	persons: { type: 'array'},
   	geography: { type: 'array'},
