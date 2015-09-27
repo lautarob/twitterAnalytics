@@ -20,7 +20,6 @@ module.exports = {
             //Categoria meterla
 
             var tweet = TweetsProcessed.create({
-
                 userName: '',
                 originalText: '',
                 topics: [],
@@ -33,7 +32,6 @@ module.exports = {
                 posted_at: '',
                 country: '',
                 filter_id: ''
-                
             });
 
             returnCallback(tweet);
