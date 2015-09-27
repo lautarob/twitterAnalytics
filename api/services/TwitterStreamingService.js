@@ -1,7 +1,6 @@
 // TwitterStreamingService.js - in api/services
 
 var Twit = require('twit')
-var AlchemyAPI = require('alchemy-api');
 
 var twitterClient = new Twit({
   consumer_key: sails.config.twitterconfig.consumer_key,
@@ -10,16 +9,14 @@ var twitterClient = new Twit({
   access_token_secret: sails.config.twitterconfig.access_token_secret
 })
 
-var alchemyClient = new AlchemyAPI(sails.config.alchemyconfig.alchemy_key);
-
 var stream = null
 
 
 module.exports = {
 
-  start: function(callback) {
+  start: function(endpoint,parameters,callback) {
 
-    stream = twitterClient.stream('statuses/sample', { language: 'en' });
+    stream = twitterClient.stream(endpoint,parameters);
 
     stream.on('connected', function (response) {
 
@@ -29,18 +26,18 @@ module.exports = {
 
     stream.on('tweet', function (tweetOriginal) {
 
-          // Aca hay que hacer la magia de analizado
+      TwitterAnalyserService.processTweet(tweetOriginal,function(tweet)
+      {
+        /*TweetsProcessed.create({
+          username:tweet.user.name,
+          text:tweet.text,
+          posted_at:tweet.created_at,
+          country:tweet.user.location,
+          filter_id:12
+        }).exec(function createCB(err, created){})*/
+      });
 
-          var tweet = null
-
-          TweetsProcessed.create({
-            username:tweet.user.name,
-            text:tweet.text,
-            posted_at:tweet.created_at,
-            country:tweet.user.location,
-            filter_id:12
-          }).exec(function createCB(err, created){})
-        });
+    });        
 
   },
 
@@ -48,10 +45,8 @@ module.exports = {
 
     stream.stop();
 
-    stream.on('disconnect', function (disconnectMessage) {
+    callback('disconnectMessage');
 
-      callback(disconnectMessage);
-    })
   }
 
 };

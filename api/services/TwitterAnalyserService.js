@@ -1,35 +1,95 @@
 // TwitterAnalyserService.js - in api/services
 
+var AlchemyAPI = require('alchemy-api');
+var async = require('async');
+
+var alchemyClient = new AlchemyAPI(sails.config.alchemyconfig.alchemy_key);
+
+
 module.exports = {
 
-    start: function(callback) {
+    processTweet: function(tweetOriginal,returnCallback) {
 
-        stream = client.stream('statuses/sample', { language: 'en' });
+        this.alchemyApiProcess(tweetOriginal,function(tweetProcessed){
 
-        stream.on('connected', function (response) {
+            // Aca hay que hacer la magia de analizado sobre alchemy
 
-            callback(response);
+            returnCallback(tweetProcessed);
 
-        });
-
-        stream.on('tweet', function (tweet) {
-
-
-            
-            TweetsProcessed.create({username:tweet.user.name,text:tweet.text,posted_at:tweet.created_at,country:tweet.user.location,processed:false}).exec(function createCB(err, created){
-            })
-        });
+        })
 
     },
 
-    stop: function(callback) {
+    alchemyApiProcess: function(tweetOriginal,returnCallback){
 
-        stream.stop();
+        tweetProcessed = null;
 
-        stream.on('disconnect', function (disconnectMessage) {
+        async.parallel([
+         function(callback) {
+            alchemyClient.entities(tweetOriginal.text, {}, function(err, response) {
+              if (err)
+              {
+                console.log(err);
+                callback(true);
+                return;
+            }
+            callback(false,response.entities);
+        });
+        },
+        function(callback) {
+            alchemyClient.keywords(tweetOriginal.text, {}, function(err, response) {
+              if (err)
+              {
+                console.log(err);
+                callback(true);
+                return;
+            }
+            callback(false,response.keywords);
+        });
+        },
+        function(callback) {
+            alchemyClient.taxonomies(tweetOriginal.text, {}, function(err, response) {
+              if (err)
+              {
+                console.log(err);
+                callback(true);
+                return;
+            }
+            callback(false,response.taxonomy);
+        });
+        },
+        function(callback) {
+            alchemyClient.category(tweetOriginal.text, {}, function(err, response) {
+              if (err)
+              {
+                console.log(err);
+                callback(true);
+                return;
+            }
+            callback(false,response.category);
+        });
+        }
+        ],
+        function(err, results) {
+            if(err)
+            {
+                console.log(err);
+                return;
+            }
+            tweetProcessed = {
+                entities: results[0],
+                keywords: results[1],
+                taxonomies: results[2],
+                category: results[3]
+            }
+            
 
-            callback(disconnectMessage);
-        })
+            returnCallback(tweetProcessed);
+        }
+        );
     }
+
+
+
 
 };
