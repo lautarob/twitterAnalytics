@@ -28,13 +28,7 @@ module.exports = {
 
       TwitterAnalyserService.processTweet(tweetOriginal,function(tweet)
       {
-        /*TweetsProcessed.create({
-          username:tweet.user.name,
-          text:tweet.text,
-          posted_at:tweet.created_at,
-          country:tweet.user.location,
-          filter_id:12
-        }).exec(function createCB(err, created){})*/
+        tweet.exec(function createCB(err, created){});
       });
 
     });        
