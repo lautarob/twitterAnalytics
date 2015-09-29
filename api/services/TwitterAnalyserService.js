@@ -47,9 +47,16 @@ module.exports = {
             	}
 
         		if(tweetProcessed.taxonomies.length > 0){
-        			if(parseFloat(tweetProcessed.taxonomies[0].score) > 0.4){
-        				topics = tweetProcessed.taxonomies[0].label.substring(1).split('/');	
-        			}
+                    for (var i = 0; i < tweetProcessed.taxonomies.length; i++) {
+            			if(parseFloat(tweetProcessed.taxonomies[i].score) > 0.4){
+            				topics.concat(tweetProcessed.taxonomies[i].label.substring(1).split('/'));	
+            			}
+                    }
+
+                    if(topics.length == 0)
+                    {
+                        topics.concat(tweetProcessed.taxonomies[0].label.substring(1).split('/'));    
+                    }
         		}
 
         		var tweet = TweetsProcessed.create({
