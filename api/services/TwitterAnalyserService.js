@@ -12,27 +12,63 @@ module.exports = {
 
         this.alchemyApiProcess(tweetOriginal,function(tweetProcessed){
 
-            // Aca hay que hacer la magia de analizado sobre alchemy
+        	var entities = [];
+        	var topics = [];
+        	var geography = [];
+        	var hashTags = [];
+        	var persons = [];
+        	var users = [];
+			var keys = [];
 
-            //Elegir las taxonomies o temas mas importanes bajo algun criterio y separar las taxonomies que tienen barras
-            //Entidades meterlas todas
-            //Keywords meterlas todas
-            //Categoria meterla
+        	for (var i = 0; i < tweetProcessed.entities.length; i++) {
+        		if(parseFloat(tweetProcessed.entities[i].relevance) > 0.5){
+					entities.push(tweetProcessed.entities[i].text);
+					switch(tweetProcessed.entities[i].type) {
+						case "Country":
+						case "City":
+						case "StateOrCounty":
+							geography.push(tweetProcessed.entities[i].text);
+							break;
+						case "Hashtag":
+							hashTags.push(tweetProcessed.entities[i].text);
+							break;
+						case "TwitterHandle":
+							users.push(tweetProcessed.entities[i].text);
+							break;
+						case "Person":
+							persons.push(tweetProcessed.entities[i].text);
+							break;
 
-            var tweet = TweetsProcessed.create({
-                userName: '',
-                originalText: '',
-                topics: [],
-                entities: [],
-                hashTags: [],
-                persons: [],
-                geography: [],
-                twitterUsers: [],
-                keyWords: [],
-                posted_at: '',
-                country: '',
-                filter_id: ''
-            });
+					}	
+        		}
+        	}
+
+        	for (var i = 0; i < tweetProcessed.keywords.length; i++) {
+        		keys.push(tweetProcessed.keywords[i].text);
+        	}
+
+    		if(tweetProcessed.taxonomies.length > 0){
+    			if(parseFloat(tweetProcessed.taxonomies[0].score) > 0.5){
+    				topics = tweetProcessed.taxonomies[0].label.substring(1).split('/');	
+    			}
+    		}
+
+    		var tweet = TweetsProcessed.create({
+                userName: tweetOriginal.user.name,
+                originalText: tweetOriginal.text,
+                topics: topics,
+                entities: entities,
+                hashTags: hashTags,
+                persons: persons,
+                geography: geography,
+                twitterUsers: users,
+                keyWords: keys,
+                posted_at: new Date(tweetOriginal.user.created_at),
+                country: tweetOriginal.user.location,
+                filter_id: 1, //dato que no se usa
+                category: tweetProcessed.category
+            });		
+        	
 
             returnCallback(tweet);
 
