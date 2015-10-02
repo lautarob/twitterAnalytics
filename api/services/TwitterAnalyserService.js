@@ -49,13 +49,13 @@ module.exports = {
                 if(tweetProcessed.taxonomies.length > 0){
                     for (var i = 0; i < tweetProcessed.taxonomies.length; i++) {
                         if(parseFloat(tweetProcessed.taxonomies[i].score) > 0.4){
-                            topics.concat(tweetProcessed.taxonomies[i].label.substring(1).split('/'));  
+                            topics = topics.concat(tweetProcessed.taxonomies[i].label.substring(1).split('/'));  
                         }
                     }
 
                     if(topics.length == 0)
                     {
-                        topics.concat(tweetProcessed.taxonomies[0].label.substring(1).split('/'));    
+                        topics = topics.concat(tweetProcessed.taxonomies[0].label.substring(1).split('/'));    
                     }
                 }
 
