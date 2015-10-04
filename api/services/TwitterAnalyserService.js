@@ -69,7 +69,7 @@ module.exports = {
                     geography: geography,
                     twitterUsers: users,
                     keyWords: keys,
-                    posted_at: new Date(tweetOriginal.user.created_at),
+                    posted_at: new Date(tweetOriginal.created_at),
                     country: tweetOriginal.user.location,
                     filter_id: 1, //dato que no se usa
                     category: tweetProcessed.category
