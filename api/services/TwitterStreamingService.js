@@ -39,8 +39,21 @@ module.exports = {
 
     stream.stop();
 
+    stream = null;
+
     callback('disconnectMessage');
 
+  },
+
+  status: function(callback){
+    if(stream != null)
+    {
+      callback('Online');
+    }
+    else
+    {
+      callback(null);
+    }
   }
 
 };
