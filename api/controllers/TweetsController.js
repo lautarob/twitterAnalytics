@@ -48,6 +48,27 @@
 
     res.status(200);
 
+  },
+
+  status: function (req, res) {
+
+    TwitterStreamingService.status(function(message){
+
+     if(message != null)
+     {
+      res.status(200);
+      return res.send("Online");
+    }
+    else
+    {
+      res.status(500);
+      return res.send("Offline");
+    }
+
+  });
+
+    res.status(200);
+
   }
 
 
