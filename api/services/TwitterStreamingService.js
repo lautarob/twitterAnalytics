@@ -28,6 +28,8 @@ module.exports = {
 
       TwitterAnalyserService.processTweet(tweetOriginal,function(tweet)
       {
+        //var query_json = ClassificationService.createQueryJsonKNNID3(tweet);
+        //var query_string = ClassificationService.createQueryJsonNaiveBayes(query_json);
         tweet.exec(function createCB(err, created){});
       });
 

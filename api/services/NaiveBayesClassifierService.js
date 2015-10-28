@@ -14,15 +14,16 @@ var classifier = new NaiveBayesClassifier({ tokenizer: tokenizerFunction });
 
 module.exports = {
 
-    classifyTweet: function(query,items_to_train) {
+    classifyTweet: function(query_string,query_json,items_to_train) {
 
         for(var i = 0; i< items_to_train.length; i++ ){
             classifier.learn(items_to_train[i].train_data, items_to_train[i].result);
         };
 
-        var classification = classifier.categorize(query);
+        var classification = classifier.categorize(query_string);
+        query_json.principalTopic = classifier.category;
     	return {
-    			'choosen': classification.category,
+    			'choosen': query_json,
     			'probability': classification.probability
     		};
 	}

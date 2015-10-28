@@ -3,7 +3,7 @@
 var DecisionTree = require('decision-tree');
 
 var features = [];
-var class_to_predict = "";
+var class_to_predict = "principalTopic";
 
 // var training_data = [
 //   {"color":"blue", "shape":"square", "liked":false},
@@ -27,7 +27,8 @@ var class_to_predict = "";
 module.exports = {
 
     classifyTweet: function(query_json,items_to_train) {
-
+        
+        delete query_json.principalTopic;
     	var dt = new DecisionTree(items_to_train, class_to_predict, features);
     	var predicted_class = dt.predict(query_json);
     	var model_to_evaluate = query_json;
