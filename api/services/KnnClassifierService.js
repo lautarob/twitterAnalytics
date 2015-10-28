@@ -24,8 +24,9 @@ module.exports = {
     classifyTweet: function(query_json,items_to_train) {
     	clasiffier.findMostSimilar(query_json,items_to_train,fields_importance, function(nearestNeighbor,probability)
     	{
+        query_json.principalTopic = nearestNeighbor.principalTopic;
     		return {
-    			'choosen': nearestNeighbor,
+    			'choosen': query_json,
     			'probability': probability
     		}
     	})

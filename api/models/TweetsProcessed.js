@@ -12,7 +12,8 @@ module.exports = {
   	userName: { type: 'string'},
   	originalText: { type: 'string'},
   	topics: { type: 'array'},
-    	entities: { type: 'array'},
+    principal_topic: {type: 'string'},
+    entities: { type: 'array'},
   	hashTags: { type: 'array'},
   	persons: { type: 'array'},
   	geography: { type: 'array'},
@@ -21,7 +22,7 @@ module.exports = {
   	posted_at: { type: 'datetime'},
   	country: { type: 'string'},
   	filter_id: { type: 'integer'},
-	category: { type: 'string'}
+  	category: { type: 'string'}
 
   }
 };

@@ -23,27 +23,33 @@ module.exports = {
             if(tweetProcessed.entities != undefined && tweetProcessed.taxonomies != undefined && tweetProcessed.keywords != undefined)
             {
                 for (var i = 0; i < tweetProcessed.entities.length; i++) {
-                    entities.push(tweetProcessed.entities[i].text);
-                    switch(tweetProcessed.entities[i].type) {
-                        case "Country":
-                        case "City":
-                        case "StateOrCounty":
-                            geography.push(tweetProcessed.entities[i].text);
-                            break;
-                        case "Hashtag":
-                            hashTags.push(tweetProcessed.entities[i].text);
-                            break;
-                        case "TwitterHandle":
-                            users.push(tweetProcessed.entities[i].text);
-                            break;
-                        case "Person":
-                            persons.push(tweetProcessed.entities[i].text);
-                            break;
-                    }   
+                    if(tweetProcessed.entities[i].text.indexOf("http") < 0)
+                    {
+                        entities.push(tweetProcessed.entities[i].text);
+                        switch(tweetProcessed.entities[i].type) {
+                            case "Country":
+                            case "City":
+                            case "StateOrCounty":
+                                geography.push(tweetProcessed.entities[i].text);
+                                break;
+                            case "Hashtag":
+                                hashTags.push(tweetProcessed.entities[i].text);
+                                break;
+                            case "TwitterHandle":
+                                users.push(tweetProcessed.entities[i].text);
+                                break;
+                            case "Person":
+                                persons.push(tweetProcessed.entities[i].text);
+                                break;
+                        }   
+                    }
                 }
 
                 for (var i = 0; i < tweetProcessed.keywords.length; i++) {
-                    keys.push(tweetProcessed.keywords[i].text);
+                    if(tweetProcessed.keywords[i].text.indexOf("http") < 0)
+                    {
+                        keys.push(tweetProcessed.keywords[i].text);
+                    }
                 }
 
                 if(tweetProcessed.taxonomies.length > 0){
