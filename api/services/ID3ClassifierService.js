@@ -6,7 +6,21 @@ var features = [];
 var class_to_predict = "principalTopic";
 
 // var training_data = [
-//   {"color":"blue", "shape":"square", "liked":false},
+//   {
+                //   "topic1":"",
+                //   "topic2":"",
+                //   "topic3":"",
+                //   "entitie1":"",
+                //   "entitie2":"",
+                //   "entitie3":"",
+                //   "hashtag1":"",
+                //   "hashtag2":"",
+                //   "hashtag3":"",
+                //   "keyword1":"",
+                //   "keyword2":"",
+                //   "keyword3":"",
+                //   "principalTopic":""
+                // }
 //   {"color":"red", "shape":"square", "liked":false},
 //   {"color":"blue", "shape":"circle", "liked":true},
 //   {"color":"red", "shape":"circle", "liked":true},
@@ -21,7 +35,7 @@ var class_to_predict = "principalTopic";
 //       shape: "hexagon"
 // };
 
-// var class_name = "liked";
+var class_name = "principalTopic";
 
 
 module.exports = {
