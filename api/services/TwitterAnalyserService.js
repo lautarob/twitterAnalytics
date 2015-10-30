@@ -19,6 +19,7 @@ module.exports = {
             var persons = [];
             var users = [];
             var keys = [];
+            var numberOfTopics = 0;
 
             if(tweetProcessed.entities != undefined && tweetProcessed.taxonomies != undefined && tweetProcessed.keywords != undefined)
             {
@@ -53,7 +54,7 @@ module.exports = {
                 }
 
                 if(tweetProcessed.taxonomies.length > 0){
-                    for (var i = 0; i < tweetProcessed.taxonomies.length; i++) {
+                    for (var i = 0; i < tweetProcessed.taxonomies.length && numberOfTopics < 3; i++) {
                         if(parseFloat(tweetProcessed.taxonomies[i].score) > 0.4){
                             topics = topics.concat(tweetProcessed.taxonomies[i].label.substring(1).split('/'));  
                         }
@@ -61,8 +62,11 @@ module.exports = {
 
                     if(topics.length == 0)
                     {
-                        topics = topics.concat(tweetProcessed.taxonomies[0].label.substring(1).split('/'));    
+                        returnCallback(null);   
                     }
+                }
+                else{
+        			returnCallback(null);
                 }
 
                 var tweet = TweetsProcessed.create({
