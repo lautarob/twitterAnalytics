@@ -53,36 +53,40 @@ module.exports = {
                 }
 
                 if(tweetProcessed.taxonomies.length > 0){
-                    for (var i = 0; i < tweetProcessed.taxonomies.length; i++) {
+                    for (var i = 0; i < tweetProcessed.taxonomies.length; i++)
+                    {
                         if(parseFloat(tweetProcessed.taxonomies[i].score) > 0.4){
-                            topics = topics.concat(tweetProcessed.taxonomies[i].label.substring(1).split('/'));  
+                            var topics_by_taxonomy = tweetProcessed.taxonomies[i].label.substring(1).split('/');
+                            for(var j = topics_by_taxonomy.length-1; j > -1; j--)
+                            {
+                                topics = topics.concat(topics_by_taxonomy[j]);  
+                            }
                         }
                     }
-
-                    if(topics.length == 0)
-                    {
-                        topics = topics.concat(tweetProcessed.taxonomies[0].label.substring(1).split('/'));    
-                    }
                 }
-
-                var tweet = TweetsProcessed.create({
-                    userName: tweetOriginal.user.name,
-                    originalText: tweetOriginal.text,
-                    topics: topics,
-                    entities: entities,
-                    hashTags: hashTags,
-                    persons: persons,
-                    geography: geography,
-                    twitterUsers: users,
-                    keyWords: keys,
-                    posted_at: new Date(tweetOriginal.created_at),
-                    country: tweetOriginal.user.location,
-                    filter_id: 1, //dato que no se usa
-                    category: tweetProcessed.category
-                });     
-                
-
-                returnCallback(tweet);
+                if(topics.length > 0)
+                {
+                    var tweet = TweetsProcessed.create({
+                        userName: tweetOriginal.user.name,
+                        originalText: tweetOriginal.text,
+                        topics: topics,
+                        entities: entities,
+                        hashTags: hashTags,
+                        persons: persons,
+                        geography: geography,
+                        twitterUsers: users,
+                        keyWords: keys,
+                        posted_at: new Date(tweetOriginal.created_at),
+                        country: tweetOriginal.user.location,
+                        filter_id: 1, //dato que no se usa
+                        category: tweetProcessed.category
+                    }); 
+                    returnCallback(tweet);
+                }  
+                else
+                {
+                    returnCallback(null);
+                }  
             }
 
         })
