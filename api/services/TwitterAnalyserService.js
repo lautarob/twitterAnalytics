@@ -19,7 +19,6 @@ module.exports = {
             var persons = [];
             var users = [];
             var keys = [];
-            var numberOfTopics = 0;
 
             if(tweetProcessed.entities != undefined && tweetProcessed.taxonomies != undefined && tweetProcessed.keywords != undefined)
             {
