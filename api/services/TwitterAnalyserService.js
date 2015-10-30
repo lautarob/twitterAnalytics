@@ -26,67 +26,96 @@ module.exports = {
                 for (var i = 0; i < tweetProcessed.entities.length; i++) {
                     if(tweetProcessed.entities[i].text.indexOf("http") < 0)
                     {
-                        entities.push(tweetProcessed.entities[i].text);
-                        switch(tweetProcessed.entities[i].type) {
-                            case "Country":
-                            case "City":
-                            case "StateOrCounty":
-                                geography.push(tweetProcessed.entities[i].text);
-                                break;
-                            case "Hashtag":
-                                hashTags.push(tweetProcessed.entities[i].text);
-                                break;
-                            case "TwitterHandle":
-                                users.push(tweetProcessed.entities[i].text);
-                                break;
-                            case "Person":
-                                persons.push(tweetProcessed.entities[i].text);
-                                break;
-                        }   
+                        if(entities.length < 4)
+                        {
+                            entities.push(tweetProcessed.entities[i].text);
+                            switch(tweetProcessed.entities[i].type) {
+                                case "Country":
+                                case "City":
+                                case "StateOrCounty":
+                                    geography.push(tweetProcessed.entities[i].text);
+                                    break;
+                                case "Hashtag":
+                                    hashTags.push(tweetProcessed.entities[i].text);
+                                    break;
+                                case "TwitterHandle":
+                                    users.push(tweetProcessed.entities[i].text);
+                                    break;
+                                case "Person":
+                                    persons.push(tweetProcessed.entities[i].text);
+                                    break;
+                            }   
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
 
                 for (var i = 0; i < tweetProcessed.keywords.length; i++) {
                     if(tweetProcessed.keywords[i].text.indexOf("http") < 0)
                     {
-                        keys.push(tweetProcessed.keywords[i].text);
+                        if(entities.length < 4)
+                        {
+                            keys.push(tweetProcessed.keywords[i].text);
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
 
                 if(tweetProcessed.taxonomies.length > 0){
-                    for (var i = 0; i < tweetProcessed.taxonomies.length && numberOfTopics < 3; i++) {
-                        if(parseFloat(tweetProcessed.taxonomies[i].score) > 0.4){
-                            topics = topics.concat(tweetProcessed.taxonomies[i].label.substring(1).split('/'));  
+                    for (var i = 0; i < tweetProcessed.taxonomies.length; i++)
+                    {
+                        if(topics.length < 4)
+                        {
+                            if(parseFloat(tweetProcessed.taxonomies[i].score) > 0.4){
+                                var topics_by_taxonomy = tweetProcessed.taxonomies[i].label.substring(1).split('/');
+                                for(var j = topics_by_taxonomy.length-1; j > -1; j--)
+                                {
+                                    if(topics.length < 4)
+                                    {
+                                        topics = topics.concat(topics_by_taxonomy[j]);  
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            break;
                         }
                     }
-
-                    if(topics.length == 0)
-                    {
-                        returnCallback(null);   
-                    }
                 }
-                else{
-        			returnCallback(null);
-                }
-
-                var tweet = TweetsProcessed.create({
-                    userName: tweetOriginal.user.name,
-                    originalText: tweetOriginal.text,
-                    topics: topics,
-                    entities: entities,
-                    hashTags: hashTags,
-                    persons: persons,
-                    geography: geography,
-                    twitterUsers: users,
-                    keyWords: keys,
-                    posted_at: new Date(tweetOriginal.created_at),
-                    country: tweetOriginal.user.location,
-                    filter_id: 1, //dato que no se usa
-                    category: tweetProcessed.category
-                });     
-                
-
-                returnCallback(tweet);
+                if(topics.length > 0)
+                {
+                    var tweet = TweetsProcessed.create({
+                        userName: tweetOriginal.user.name,
+                        originalText: tweetOriginal.text,
+                        topics: topics,
+                        entities: entities,
+                        hashTags: hashTags,
+                        persons: persons,
+                        geography: geography,
+                        twitterUsers: users,
+                        keyWords: keys,
+                        posted_at: new Date(tweetOriginal.created_at),
+                        country: tweetOriginal.user.location,
+                        filter_id: 1, //dato que no se usa
+                        category: tweetProcessed.category
+                    }); 
+                    returnCallback(tweet);
+                }  
+                else
+                {
+                    returnCallback(null);
+                }  
             }
 
         })
