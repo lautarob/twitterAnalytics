@@ -79,8 +79,12 @@ module.exports = {
 	{
         var query_json_bayes = "";
 
-        for(var k in query_json){
-            query_json_bayes = query_json_bayes.concat(query_json[k]+',')
+        for(var k in query_json)
+        {
+        	if(query_json[k] != "")
+        	{
+        		query_json_bayes = query_json_bayes.concat(query_json[k]+',');
+        	}
         };
 
      	return query_json_bayes;

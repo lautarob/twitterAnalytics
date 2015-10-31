@@ -30,8 +30,6 @@ module.exports = {
       {
         if(tweet != null)
         {
-          var query_json = ClassificationService.createQueryJsonKNNID3(tweet);
-          var query_string = ClassificationService.createQueryJsonNaiveBayes(query_json);
           tweet.exec(function createCB(err, created){});
         }
       });

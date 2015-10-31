@@ -64,7 +64,7 @@ module.exports = {
                         }
                     }
                 }
-                if(topics.length > 0)
+                if(topics.length > 2)
                 {
                     var tweet = TweetsProcessed.create({
                         userName: tweetOriginal.user.name,
