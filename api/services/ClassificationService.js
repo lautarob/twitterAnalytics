@@ -1,23 +1,65 @@
 // ClassificationService.js - in api/services
 
+var items_to_train = [];
+
+
 module.exports = {
+
+	setItemsToTrain: function(callBackReturn){
+    var self = this;
+    	 TweetsProcessed.native(function(err, collection) {
+          if (err) return res.serverError(err);
+
+          collection.aggregate([
+           { "$project" : {
+            "to_train" : 1,
+            "principal_topic" : 1,
+            "entities" : 1,
+            "hashTags" : 1,
+            "keyWords" : 1,
+            "topics" : 1,
+             }
+           },
+           { "$match" : { "to_train" : true } },
+           { "$limit": 100 }
+           ] ).toArray(function (err, results) {
+            if (err)
+                {
+                    callBackReturn(true);
+                }
+                results.forEach(function(item,index){
+                  var tweet = TweetsProcessed.create({
+                        topics: item.topics,
+                        entities: item.entities,
+                        hashTags: item.hashTags,
+                        principal_topic: item.principal_topic,
+                        to_train: item.to_train,
+                        keyWords: item.keyWords
+                    }); 
+                  items_to_train.push(self.createQueryJsonKNNID3(tweet));
+                })
+                callBackReturn(false)
+          });
+
+        });
+	},
 
 	createQueryJsonKNNID3: function(tweet)
 	{
 		var query_json = {
-		          "topic1":"",
-		          "topic2":"",
-		          "topic3":"",
 		          "entitie1":"",
 		          "entitie2":"",
 		          "entitie3":"",
-		          "hashtag1":"",
-		          "hashtag2":"",
-		          "hashtag3":"",
-		          "keyword1":"",
-		          "keyword2":"",
-		          "keyword3":"",
-		          "principalTopic":""
+              "hashtag1":"",
+              "hashtag2":"",
+              "hashtag3":"",
+              "keyword1":"",
+              "keyword2":"",
+              "keyword3":"",
+              "topic1":"",
+              "topic2":"",
+              "topic3":"",
+		          "principal_topic":""
 		        }
 
         if(tweet._values.entities[0])
@@ -71,6 +113,10 @@ module.exports = {
         {
           query_json.topic3 = tweet._values.topics[2];
         }
+        if(tweet._values.principal_topic)
+        {
+          query_json.principal_topic = tweet._values.principal_topic;
+        }
 
      	return query_json;
 	},
@@ -90,8 +136,7 @@ module.exports = {
      	return query_json_bayes;
 	},
 
-    KNNclassifyTweet: function(query_json,items_to_train) {
-
+    KNNclassifyTweet: function(query_json) {
 		// var items = [
 		//   { name: "Bill", age: 10, pc: "Mac", ip: "68.23.13.8" },
 		//   { name: "Alice", age: 22, pc: "Windows", ip: "193.186.11.3" },
@@ -107,10 +152,12 @@ module.exports = {
 		//   { name: "ip", measure: nn.comparisonMethods.ip }
 		// ];
 
-    	return KnnClassifierService.classifyTweet(query_json,items_to_train);
+    return KnnClassifierService.classifyTweet(query_json,items_to_train);
+
+
 	},
 
-	ID3classifyTweet: function(query_json,items_to_train) {
+	ID3classifyTweet: function(query_json) {
 
 		// var training_data = [
 	 //      {"color":"blue", "shape":"square", "liked":false},
@@ -126,7 +173,7 @@ module.exports = {
     	return ID3ClassifierService.classifyTweet(query_json,items_to_train);
 	},
 
-	NaiveBayesClassifyTweet: function(query_string,query_json,items_to_train) {
+	NaiveBayesClassifyTweet: function(query_string,query_json) {
 
 		// var items = [
 		// 	{
@@ -143,6 +190,54 @@ module.exports = {
 		// 	}
 		// ]
 
+        // var trainSet = [
+    //   { input:'What is your name',output: "name" },
+    //   { input:'how are you',output: "fine"},
+    //   { input:'please tell your name please',output: "name" },
+    //   { input:'your name please',output: "name" },
+    //   { input:'what is your name',output: "name" },
+    //   { input:'who am i',output: "listener" },
+    //   { input:'who are you ',output: "name" },
+    //   { input:'may i know your name',output: "name" },
+    //   { input:'your name',output: "name" },
+    //   { input:'where you coming from',output: "about" },
+    //   { input:'how do you do',output: "fine" },
+    //   { input:'how are you doing',output: "fine"},
+    //   { input:'how are you',output: "fine"},
+    //   { input:'how do you do',output: "fine"},
+    //   { input:'how are you',output: "fine"},
+    //   { input:'what do you do',output: "fine"},
+    //   { input:'can you edit this',output: "edit"}
+     
+    // ]
+
     	return NaiveBayesClassifierService.classifyTweet(query_string,query_json,items_to_train);
-	}
+	},
+
+  SVMClassifyTweet: function(query_string,query_json)
+  {
+    // var trainSet = [
+    //   { input:'What is your name',output: "name" },
+    //   { input:'how are you',output: "fine"},
+    //   { input:'please tell your name please',output: "name" },
+    //   { input:'your name please',output: "name" },
+    //   { input:'what is your name',output: "name" },
+    //   { input:'who am i',output: "listener" },
+    //   { input:'who are you ',output: "name" },
+    //   { input:'may i know your name',output: "name" },
+    //   { input:'your name',output: "name" },
+    //   { input:'where you coming from',output: "about" },
+    //   { input:'how do you do',output: "fine" },
+    //   { input:'how are you doing',output: "fine"},
+    //   { input:'how are you',output: "fine"},
+    //   { input:'how do you do',output: "fine"},
+    //   { input:'how are you',output: "fine"},
+    //   { input:'what do you do',output: "fine"},
+    //   { input:'can you edit this',output: "edit"}
+     
+    // ]
+
+    // var query = 'who are you';
+    return SVMClassifierService.classifyTweet(query_string,query_json,items_to_train);
+  }
 };

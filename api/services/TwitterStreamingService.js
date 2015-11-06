@@ -30,6 +30,22 @@ module.exports = {
       {
         if(tweet != null)
         {
+          var query_json = ClassificationService.createQueryJsonKNNID3(tweet);
+          var query_string = ClassificationService.createQueryJsonNaiveBayes(query_json);
+          //var classification = ClassificationService.ID3classifyTweet(query_json);
+          // KNN
+          // var classification = ClassificationService.KNNclassifyTweet(query_json);
+          // tweet.principal_topic = classification.choosen.principal_topic;
+          //
+          // NAIVE BAYES
+          //var classification = ClassificationService.NaiveBayesClassifyTweet(query_string,query_json);
+          //tweet.principal_topic = classification.choosen.principal_topic;
+          //
+          // NAIVE BAYES
+          var classification = ClassificationService.SVMClassifyTweet(query_string,query_json);
+          tweet.principal_topic = classification.choosen.principal_topic;
+
+          //
           tweet.exec(function createCB(err, created){});
         }
       });

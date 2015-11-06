@@ -50,6 +50,23 @@
 
   },
 
+  setItemsToTrain: function(req,res)
+  {
+    ClassificationService.setItemsToTrain(function(err)
+    {
+      if(err)
+      {
+        res.status(500);
+        return res.send("Error trying to set items to train");
+      }
+      else
+      {
+        res.status(200);
+        return res.send("Items OK");
+      }
+    })
+  },
+
   status: function (req, res) {
 
     TwitterStreamingService.status(function(message){

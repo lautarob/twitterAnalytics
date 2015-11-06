@@ -75,6 +75,8 @@ module.exports = {
                         persons: persons,
                         geography: geography,
                         twitterUsers: users,
+                        principal_topic: "",
+                        to_train: false,
                         keyWords: keys,
                         posted_at: new Date(tweetOriginal.created_at),
                         country: tweetOriginal.user.location,
