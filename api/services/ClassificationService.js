@@ -20,8 +20,8 @@ module.exports = {
             "topics" : 1,
              }
            },
-           { "$match" : { "to_train" : true } },
-           { "$limit": 100 }
+           { "$match" : { "to_train" : true } }//,
+           //{ "$limit": 100 }
            ] ).toArray(function (err, results) {
             if (err)
                 {
