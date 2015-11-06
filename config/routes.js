@@ -38,7 +38,9 @@ module.exports.routes = {
 
   'post /start': 'TweetsController.start',
   'post /stop': 'TweetsController.stop',
-  'get /status': 'TweetsController.status'
+  'get /status': 'TweetsController.status',
+  'post /setItemsToTrain': 'TweetsController.setItemsToTrain'
+
 
 
 

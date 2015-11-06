@@ -2,8 +2,21 @@
 
 var DecisionTree = require('decision-tree');
 
-var features = [];
-var class_to_predict = "principalTopic";
+var features = ["entitie1",
+                "entitie2",
+                "entitie3",
+                "hashtag1",
+                "hashtag2",
+                "hashtag3",
+                "keyword1",
+                "keyword2",
+                "keyword3",
+                "topic1",
+                "topic2",
+                "topic3"
+                ]
+
+var class_to_predict = "principal_topic";
 
 // var training_data = [
 //   {
@@ -35,15 +48,21 @@ var class_to_predict = "principalTopic";
 //       shape: "hexagon"
 // };
 
-var class_name = "principalTopic";
+var trained = false;
+var dt = null;
+
 
 
 module.exports = {
 
     classifyTweet: function(query_json,items_to_train) {
         
-        delete query_json.principalTopic;
-    	var dt = new DecisionTree(items_to_train, class_to_predict, features);
+        delete query_json.principal_topic;
+        if(!trained)
+        {
+            dt = new DecisionTree(items_to_train, class_to_predict, features);
+            trained = true;
+        }
     	var predicted_class = dt.predict(query_json);
     	var model_to_evaluate = query_json;
     	model_to_evaluate[class_to_predict] = predicted_class;

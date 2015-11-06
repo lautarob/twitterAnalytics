@@ -16,6 +16,7 @@ module.exports = {
     entities: { type: 'array'},
   	hashTags: { type: 'array'},
   	persons: { type: 'array'},
+    to_train: {type : 'boolean'},
   	geography: { type: 'array'},
   	twitterUsers: { type: 'array'},
   	keyWords: { type: 'array'},

@@ -43,7 +43,8 @@ var fields_importance = [
   { name: "hashtag3", measure: clasiffier.comparisonMethods.word },
   { name: "keyword1", measure: clasiffier.comparisonMethods.word },
   { name: "keyword2", measure: clasiffier.comparisonMethods.word },
-  { name: "keyword3", measure: clasiffier.comparisonMethods.word }
+  { name: "keyword3", measure: clasiffier.comparisonMethods.word },
+  { name: "principal_topic", measure: clasiffier.comparisonMethods.word }
   ];
 
 // var query = { name: "Bob", age: 12, pc: "Windows", ip: "68.23.13.10" };
@@ -51,13 +52,15 @@ var fields_importance = [
 module.exports = {
 
     classifyTweet: function(query_json,items_to_train) {
+      var ret = null;
     	clasiffier.findMostSimilar(query_json,items_to_train,fields_importance, function(nearestNeighbor,probability)
     	{
-        query_json.principalTopic = nearestNeighbor.principalTopic;
-    		return {
+        query_json.principal_topic = nearestNeighbor.principal_topic;
+    		ret = {
     			'choosen': query_json,
     			'probability': probability
     		}
     	})
+      return ret;
 	}
 };
