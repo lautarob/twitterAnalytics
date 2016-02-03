@@ -10,9 +10,10 @@
   start: function (req, res) {
 
     var endpoint = req.body.endpoint;
-    var parameters = req.body.parameters
+    var parameters = req.body.parameters;
+    var algorithm = req.body.algorithm;
 
-    TwitterStreamingService.start(endpoint,parameters,function(response){
+    TwitterStreamingService.start(endpoint,parameters,algorithm,function(response){
 
      if(response.statusCode == 200)
      {
