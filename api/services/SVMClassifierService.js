@@ -25,7 +25,6 @@ var actionClassifier = new multilabel.Classifier({kernel : 'linear'});
 // ]
 
 // var query = 'who are you';
-var trained = false;
 
 module.exports = {
 
@@ -50,9 +49,9 @@ module.exports = {
 
   classifyTweet: function(query_string,query_json,items_to_train) {
     var items_to_train_modified = this.generateItems(items_to_train);
-    if(!trained){
+    if(!TwitterStreamingService.getTrainedStatus()){
         actionClassifier.trainBatch(items_to_train_modified);
-        trained = true;
+        TwitterStreamingService.setTrainedStatus(true);
     }
 
 

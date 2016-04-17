@@ -10,9 +10,22 @@ var twitterClient = new Twit({
 })
 
 var stream = null
+var trained = false;
 
 
 module.exports = {
+
+  getTrained: function(callback){
+    callback(trained);
+  },
+
+  getTrainedStatus:function(){
+    return trained;
+  },
+
+  setTrainedStatus:function(istrained){
+    trained = istrained;
+  },
 
   start: function(endpoint,parameters,algorithm,callback) {
 
@@ -43,7 +56,7 @@ module.exports = {
             var query_string = ClassificationService.createQueryJsonNaiveBayes(query_json);
             var classification = ClassificationService.NaiveBayesClassifyTweet(query_string,query_json);
             tweet.principal_topic = classification.choosen.principal_topic;
-          }else{
+          }else if(algorithm == 'KNN'){
             // KNN
             var query_json = ClassificationService.createQueryJsonKNNID3(tweet);
             var classification = ClassificationService.KNNclassifyTweet(query_json);
@@ -67,14 +80,14 @@ module.exports = {
 
   },
 
-  status: function(callback){
+  serverRunning: function(callback){
     if(stream != null)
     {
-      callback('Online');
+      callback(true);
     }
     else
     {
-      callback(null);
+      callback(false);
     }
   }
 
