@@ -30,6 +30,13 @@
   });
 
   },
+
+  getTrained: function(req, res){
+    TwitterStreamingService.getTrained(function(response){
+      return res.send(response);
+    })
+  },
+
   stop: function (req, res) {
 
     TwitterStreamingService.stop(function(message){
@@ -68,24 +75,12 @@
     })
   },
 
-  status: function (req, res) {
+  serverRunning: function (req, res) {
 
-    TwitterStreamingService.status(function(message){
-
-     if(message != null)
-     {
+    TwitterStreamingService.serverRunning(function(status){
       res.status(200);
-      return res.send("Online");
-    }
-    else
-    {
-      res.status(500);
-      return res.send("Offline");
-    }
-
-  });
-
-    res.status(200);
+      return res.send(status);
+    })
 
   }
 

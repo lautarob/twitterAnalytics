@@ -11,7 +11,6 @@ var classifier = new NaiveBayesClassifier({ tokenizer: tokenizerFunction });
 //   {train_data:'putas,conos,idiotas', result:'neutral'}]
 
 // var query = 'terrible'
-var trained = false;
 
 module.exports = {
 
@@ -35,13 +34,13 @@ module.exports = {
 
     classifyTweet: function(query_string,query_json,items_to_train) {
 
-        if(!trained)
+        if(!TwitterStreamingService.getTrainedStatus())
         {
             var items_to_train_modified = this.generateItems(items_to_train);
             for(var i = 0; i< items_to_train_modified.length; i++ ){
                 classifier.learn(items_to_train_modified[i].train_data, items_to_train_modified[i].result);
             };  
-            trained = true;
+            TwitterStreamingService.setTrainedStatus(true);
         }
         var classification = classifier.categorize(query_string);
         query_json.principal_topic = classification.category;
