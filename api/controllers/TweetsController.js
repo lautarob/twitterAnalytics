@@ -14,25 +14,34 @@
     var algorithm = req.body.algorithm;
 
     TwitterStreamingService.start(endpoint,parameters,algorithm,function(response){
+      if(response.statusCode == 200){
+        res.status(200);
+        return res.send("Connection established");
+      }
+      else{
+        res.status(500);
+        return res.send("Connection cannot be established");
+      }
+    });
 
-     if(response.statusCode == 200)
-     {
-      res.status(200);
-      return res.send("Connection established");
-    }
-    else
-    {
-      res.status(500);
-      return res.send("Connection cannot be established");
-    }
+  },
 
-
-  });
-
+  train: function (req, res) {
+    var algorithm = req.body.algorithm;
+    TwitterStreamingService.train(algorithm,function(response){
+      return res.send(response);
+    })
   },
 
   getTrained: function(req, res){
     TwitterStreamingService.getTrained(function(response){
+      return res.send(response);
+    })
+  },
+
+  getTrainedByAlgorithm: function(req, res){
+    var algorithm = req.body.algorithm;
+    TwitterStreamingService.getTrainedByAlgorithm(algorithm,function(response){
       return res.send(response);
     })
   },
@@ -73,15 +82,6 @@
         return res.send("Items OK");
       }
     })
-  },
-
-  serverRunning: function (req, res) {
-
-    TwitterStreamingService.serverRunning(function(status){
-      res.status(200);
-      return res.send(status);
-    })
-
   }
 
 
