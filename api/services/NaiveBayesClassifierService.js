@@ -31,14 +31,10 @@ module.exports = {
         for(var i = 0; i< items_to_train_modified.length; i++ ){
             classifier.learn(items_to_train_modified[i].train_data, items_to_train_modified[i].result);
         };  
-    }
+    },
 
-    classify: function(query_string,query_json) {
+    classify: function(query_string) {
         var classification = classifier.categorize(query_string);
-        query_json.principal_topic = classification.category;
-    	return {
-    			'choosen': query_json,
-    			'probability': classification.probability
-    		};
+    	return classification.category;
 	}
 };

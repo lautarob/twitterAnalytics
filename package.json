@@ -31,7 +31,8 @@
     "sails-disk": "~0.10.0",
     "sails-mongo": "^0.11.4",
     "stopwords": "0.0.5",
-    "twit": "^2.1.0"
+    "twit": "^2.1.0",
+    "wait.for": "^0.6.6"
   },
   "scripts": {
     "debug": "node debug app.js",

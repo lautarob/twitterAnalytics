@@ -26,13 +26,10 @@ module.exports = {
     train: function(items_to_train) {
         var items_to_train_modified = this.generateItems(items_to_train);
         actionClassifier.trainBatch(items_to_train_modified);
-    }
+    },
 
-    classify: function(query_string,query_json) {
+    classify: function(query_string) {
         var classification = actionClassifier.classify(query_string);
-        query_json.principal_topic = classification;
-        return {
-          'choosen': query_json
-        };
+        return classification;
     }
 };

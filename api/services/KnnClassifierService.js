@@ -8,9 +8,6 @@ var fields_importance = [
   { name: "entitie1", measure: clasiffier.comparisonMethods.word },
   { name: "entitie2", measure: clasiffier.comparisonMethods.word },
   { name: "entitie3", measure: clasiffier.comparisonMethods.word }, 
-  { name: "hashtag1", measure: clasiffier.comparisonMethods.word },
-  { name: "hashtag2", measure: clasiffier.comparisonMethods.word },
-  { name: "hashtag3", measure: clasiffier.comparisonMethods.word },
   { name: "keyword1", measure: clasiffier.comparisonMethods.word },
   { name: "keyword2", measure: clasiffier.comparisonMethods.word },
   { name: "keyword3", measure: clasiffier.comparisonMethods.word },
@@ -23,12 +20,9 @@ module.exports = {
     var ret = null;
   	clasiffier.findMostSimilar(query_json,items_to_train,fields_importance, function(nearestNeighbor,probability)
   	{
-      query_json.principal_topic = nearestNeighbor.principal_topic;
-  		ret = {
-  			'choosen': query_json,
-  			'probability': probability
-  		}
+  		ret = nearestNeighbor.principal_topic;
   	})
     return ret;
-}
+  }
+
 };

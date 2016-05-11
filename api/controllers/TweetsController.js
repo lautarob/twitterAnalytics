@@ -7,13 +7,31 @@
  
  module.exports = {
 
-  start: function (req, res) {
+  startStreamingAndClassification: function (req, res) {
 
     var endpoint = req.body.endpoint;
     var parameters = req.body.parameters;
     var algorithm = req.body.algorithm;
 
-    TwitterStreamingService.start(endpoint,parameters,algorithm,function(response){
+    TwitterStreamingService.startStreamingAndClassification(endpoint,parameters,algorithm,function(response){
+      if(response.statusCode == 200){
+        res.status(200);
+        return res.send("Connection established");
+      }
+      else{
+        res.status(500);
+        return res.send("Connection cannot be established");
+      }
+    });
+
+  },
+
+  startStreaming: function (req, res) {
+
+    var endpoint = req.body.endpoint;
+    var parameters = req.body.parameters;
+
+    TwitterStreamingService.startStreaming(endpoint,parameters,function(response){
       if(response.statusCode == 200){
         res.status(200);
         return res.send("Connection established");
@@ -83,8 +101,6 @@
       }
     })
   }
-
-
 
 };
 

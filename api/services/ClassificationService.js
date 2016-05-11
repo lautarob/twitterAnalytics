@@ -5,10 +5,9 @@ var items_to_train = [];
 
 module.exports = {
 
-	setItemsToTrain: function(callBackReturn){
+  setItemsToTrain: function(callBackReturn){
     var self = this;
     TweetsProcessed.native(function(err, collection) {
-      if (err) return res.serverError(err);
 
       collection.aggregate([
         { 
@@ -25,7 +24,7 @@ module.exports = {
        //{ "$limit": 100 }
       ]).toArray(function (err, results) {
         if (err){
-          callBackReturn(true);
+          callBackReturn();
         }
         results.forEach(function(item,index){
           var tweet = TweetsProcessed.create({
@@ -36,21 +35,18 @@ module.exports = {
                 to_train: item.to_train,
                 keyWords: item.keyWords
             }); 
-          items_to_train.push(self.createQueryJsonKNNID3(tweet));
+          items_to_train.push(self.createJSONQuery(tweet));
         })
         callBackReturn(false)
       });
     });
-	},
+  },
 
 	createJSONQuery: function(tweet){
 		var query_json = {
 		          "entitie1":"",
 		          "entitie2":"",
 		          "entitie3":"",
-              "hashtag1":"",
-              "hashtag2":"",
-              "hashtag3":"",
               "keyword1":"",
               "keyword2":"",
               "keyword3":"",
@@ -71,19 +67,6 @@ module.exports = {
     if(tweet._values.entities[2])
     {
       query_json.entitie3 = tweet._values.entities[2];
-    }
-
-    if(tweet._values.hashTags[0])
-    {
-      query_json.hashtag1 = tweet._values.hashTags[0];
-    }
-    if(tweet._values.hashTags[1])
-    {
-      query_json.hashtag2 = tweet._values.hashTags[1];
-    }
-    if(tweet._values.hashTags[2])
-    {
-      query_json.hashtag3 = tweet._values.hashTags[2];
     }
 
     if(tweet._values.keyWords[0])
@@ -133,23 +116,23 @@ module.exports = {
    	return query_json_bayes;
 	},
 
-  NaiveBayesTrain: function(query_string,query_json){
-    return NaiveBayesClassifierService.train(items_to_train);
+  NaiveBayesTrain: function(){
+    NaiveBayesClassifierService.train(items_to_train);
   },
 
-  SVMTrain: function(query_string,query_json){
-    return SVMClassifierService.train(items_to_train);
-  }
+  SVMTrain: function(){
+    SVMClassifierService.train(items_to_train);
+  },
 
   KNNClassify: function(query_json){
-    return KnnClassifierService.classify(query_json);
+    return KnnClassifierService.classify(query_json,items_to_train);
 	},
 
-	NaiveBayesClassify: function(query_string,query_json){
-    return NaiveBayesClassifierService.classify(query_string,query_json);
+	NaiveBayesClassify: function(query_string){
+    return NaiveBayesClassifierService.classify(query_string);
 	},
 
-  SVMClassify: function(query_string,query_json){
-    return SVMClassifierService.classify(query_string,query_json);
+  SVMClassify: function(query_string){
+    return SVMClassifierService.classify(query_string);
   }
 };
