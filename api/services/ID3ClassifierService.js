@@ -55,7 +55,7 @@ var dt = null;
 
 module.exports = {
 
-    classifyTweet: function(query_json,items_to_train) {
+    classify: function(query_json,items_to_train) {
         
         delete query_json.principal_topic;
         if(!trained)

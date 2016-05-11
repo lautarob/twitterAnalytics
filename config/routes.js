@@ -36,9 +36,11 @@ module.exports.routes = {
     view: 'homepage'
   },
 
-  'post /start': 'TweetsController.start',
+  'post /startStreamingAndClassification': 'TweetsController.startStreamingAndClassification',
+  'post /startStreaming': 'TweetsController.startStreaming',
+  'post /train': 'TweetsController.train',
   'post /stop': 'TweetsController.stop',
-  'get /serverRunning': 'TweetsController.serverRunning',
+  'post /getTrainedByAlgorithm': 'TweetsController.getTrainedByAlgorithm',
   'get /getTrained': 'TweetsController.getTrained',
   'post /setItemsToTrain': 'TweetsController.setItemsToTrain'
 

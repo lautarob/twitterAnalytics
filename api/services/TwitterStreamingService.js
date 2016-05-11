@@ -10,7 +10,9 @@ var twitterClient = new Twit({
 })
 
 var stream = null
+var trainedAlgorithms = [];
 var trained = false;
+
 
 
 module.exports = {
@@ -18,16 +20,53 @@ module.exports = {
   getTrained: function(callback){
     callback(trained);
   },
+  getTrainedByAlgorithm: function(algorithm,callback){
+    if(trainedAlgorithms.indexOf(algorithm) < 0){
+      callback(false);
+    }
+    else{
+      callback(true);
+    }
+  },
 
   getTrainedStatus:function(){
     return trained;
+  },
+
+  getTrainedStatusByAlgorithm:function(algorithm){
+    if(trainedAlgorithms.indexOf(algorithm) < 0){
+      return false;
+    }
+    else{
+      return true;
+    }
   },
 
   setTrainedStatus:function(istrained){
     trained = istrained;
   },
 
-  start: function(endpoint,parameters,algorithm,callback) {
+  setTrainedAlgorithm:function(algorithm){
+    if(!this.getTrainedStatusByAlgorithm(algorithm)){
+      trainedAlgorithms.push(algorithm);
+    }
+  },
+
+  startStreaming: function(endpoint,parameters,callback){
+    stream = twitterClient.stream(endpoint,parameters);
+    stream.on('connected', function (response) {
+      callback(response);
+    });
+    stream.on('tweet', function (tweetOriginal) {
+      TwitterAnalyserService.processTweet(tweetOriginal,function(tweet){
+        if(tweet != null){
+          tweet.exec(function createCB(err, created){});
+        }
+      }); 
+    });       
+  },
+
+  startStreamingAndClassification: function(endpoint,parameters,algorithm,callback) {
 
     stream = twitterClient.stream(endpoint,parameters);
 
@@ -42,25 +81,32 @@ module.exports = {
       TwitterAnalyserService.processTweet(tweetOriginal,function(tweet)
       {
         //var classification = ClassificationService.ID3classifyTweet(query_json);
-        if(tweet != null)
-        {
+        if(tweet != null){
           if(algorithm == 'SVM'){
             // SVM
-            var query_json = ClassificationService.createQueryJsonKNNID3(tweet);
-            var query_string = ClassificationService.createQueryJsonNaiveBayes(query_json);
-            var classification = ClassificationService.SVMClassifyTweet(query_string,query_json);
-            tweet.principal_topic = classification.choosen.principal_topic;
+            var query_json = ClassificationService.createJSONQuery(tweet);
+            var query_string = ClassificationService.createStringQuery(query_json);
+            if(!TwitterStreamingService.getTrainedStatusByAlgorithm('SVM')){
+              ClassificationService.SVMTrain();
+              TwitterStreamingService.setTrainedAlgorithm('SVM');
+            }
+            var principal_topic = ClassificationService.SVMClassify(query_string);
+            tweet.principal_topic = principal_topic;
           }else if(algorithm == 'NaiveBayes'){
             // NAIVE BAYES
-            var query_json = ClassificationService.createQueryJsonKNNID3(tweet);
-            var query_string = ClassificationService.createQueryJsonNaiveBayes(query_json);
-            var classification = ClassificationService.NaiveBayesClassifyTweet(query_string,query_json);
-            tweet.principal_topic = classification.choosen.principal_topic;
+            var query_json = ClassificationService.createJSONQuery(tweet);
+            var query_string = ClassificationService.createStringQuery(query_json);
+            if(!TwitterStreamingService.getTrainedStatusByAlgorithm('NaiveBayes')){
+              ClassificationService.NaiveBayesTrain();
+              TwitterStreamingService.setTrainedAlgorithm('NaiveBayes');
+            }
+            var principal_topic = ClassificationService.NaiveBayesClassify(query_string);
+            tweet.principal_topic = principal_topic;
           }else if(algorithm == 'KNN'){
             // KNN
-            var query_json = ClassificationService.createQueryJsonKNNID3(tweet);
-            var classification = ClassificationService.KNNclassifyTweet(query_json);
-            tweet.principal_topic = classification.choosen.principal_topic;
+            var query_json = ClassificationService.createJSONQuery(tweet);
+            var principal_topic = ClassificationService.KNNClassify(query_json);
+            tweet.principal_topic = principal_topic;
           }
           tweet.exec(function createCB(err, created){});
         }
@@ -80,14 +126,16 @@ module.exports = {
 
   },
 
-  serverRunning: function(callback){
-    if(stream != null)
-    {
+  train: function(algorithm,callback){
+    if(algorithm == 'SVM'){
+      ClassificationService.SVMTrain();
+      TwitterStreamingService.setTrainedAlgorithm('SVM');
       callback(true);
     }
-    else
-    {
-      callback(false);
+    else if(algorithm == 'NaiveBayes'){
+      ClassificationService.NaiveBayesTrain();
+      TwitterStreamingService.setTrainedAlgorithm('NaiveBayes');
+      callback(true);
     }
   }
 

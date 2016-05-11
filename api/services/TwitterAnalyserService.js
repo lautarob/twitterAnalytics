@@ -9,61 +9,12 @@ var alchemyClient = new AlchemyAPI(sails.config.alchemyconfig.alchemy_key);
 module.exports = {
 
     processTweet: function(tweetOriginal,returnCallback) {
-
         this.alchemyApiProcess(tweetOriginal,function(tweetProcessed){
+            if(tweetProcessed.entities != undefined && tweetProcessed.taxonomies != undefined && tweetProcessed.keywords != undefined){
+                var entities = EntitiesExtractionService.processText(tweetProcessed);
+                var keywords = KeywordsExtractionService.processText(tweetProcessed);
+                var topics = CandidateTopicsExtractionService.processText(tweetProcessed);
 
-            var entities = [];
-            var topics = [];
-            var geography = [];
-            var hashTags = [];
-            var persons = [];
-            var users = [];
-            var keys = [];
-
-            if(tweetProcessed.entities != undefined && tweetProcessed.taxonomies != undefined && tweetProcessed.keywords != undefined)
-            {
-                for (var i = 0; i < tweetProcessed.entities.length; i++) {
-                    if(tweetProcessed.entities[i].text.indexOf("http") < 0)
-                    {
-                        entities.push(tweetProcessed.entities[i].text);
-                        switch(tweetProcessed.entities[i].type) {
-                            case "Country":
-                            case "City":
-                            case "StateOrCounty":
-                                geography.push(tweetProcessed.entities[i].text);
-                                break;
-                            case "Hashtag":
-                                hashTags.push(tweetProcessed.entities[i].text);
-                                break;
-                            case "TwitterHandle":
-                                users.push(tweetProcessed.entities[i].text);
-                                break;
-                            case "Person":
-                                persons.push(tweetProcessed.entities[i].text);
-                                break;
-                        }   
-                    }
-                }
-
-                for (var i = 0; i < tweetProcessed.keywords.length; i++) {
-                    if(tweetProcessed.keywords[i].text.indexOf("http") < 0)
-                    {
-                        keys.push(tweetProcessed.keywords[i].text);
-                    }
-                }
-
-                if(tweetProcessed.taxonomies.length > 0){
-                    for (var i = 0; i < tweetProcessed.taxonomies.length; i++)
-                    {
-                        if(parseFloat(tweetProcessed.taxonomies[i].score) > 0.4){
-                            var topics_by_taxonomy = tweetProcessed.taxonomies[i].label.substring(1).split('/');
-                            for(var j = topics_by_taxonomy.length-1; j > -1; j--)
-                            {
-                                topics = topics.concat(topics_by_taxonomy[j]);  
-                            }
-                        }
-                    }
-                }
                 if(topics.length > 2)
                 {
                     var tweet = TweetsProcessed.create({
@@ -71,17 +22,10 @@ module.exports = {
                         originalText: tweetOriginal.text,
                         topics: topics,
                         entities: entities,
-                        hashTags: hashTags,
-                        persons: persons,
-                        geography: geography,
-                        twitterUsers: users,
                         principal_topic: "",
                         to_train: false,
-                        keyWords: keys,
-                        posted_at: new Date(tweetOriginal.created_at),
-                        country: tweetOriginal.user.location,
-                        filter_id: 1, //dato que no se usa
-                        category: tweetProcessed.category
+                        keyWords: keywords,
+                        posted_at: new Date(tweetOriginal.created_at)
                     }); 
                     returnCallback(tweet);
                 }  
@@ -90,18 +34,16 @@ module.exports = {
                     returnCallback(null);
                 }  
             }
-
         })
-
     },
 
     alchemyApiProcess: function(tweetOriginal,returnCallback){
-
-        tweetProcessed = null;
+        var tweetProcessed = null;
+        var text = SimplificationService.simplify(tweetOriginal.text);
 
         async.parallel([
          function(callback) {
-            alchemyClient.entities(tweetOriginal.text, {}, function(err, response) {
+            alchemyClient.entities(text, {}, function(err, response) {
               if (err)
               {
                 console.log(err);
@@ -112,7 +54,7 @@ module.exports = {
         });
         },
         function(callback) {
-            alchemyClient.keywords(tweetOriginal.text, {}, function(err, response) {
+            alchemyClient.keywords(text, {}, function(err, response) {
               if (err)
               {
                 console.log(err);
@@ -123,7 +65,7 @@ module.exports = {
         });
         },
         function(callback) {
-            alchemyClient.taxonomies(tweetOriginal.text, {}, function(err, response) {
+            alchemyClient.taxonomies(text, {}, function(err, response) {
               if (err)
               {
                 console.log(err);
@@ -131,17 +73,6 @@ module.exports = {
                 return;
             }
             callback(false,response.taxonomy);
-        });
-        },
-        function(callback) {
-            alchemyClient.category(tweetOriginal.text, {}, function(err, response) {
-              if (err)
-              {
-                console.log(err);
-                callback(true);
-                return;
-            }
-            callback(false,response.category);
         });
         }
         ],
@@ -155,7 +86,6 @@ module.exports = {
                 entities: results[0],
                 keywords: results[1],
                 taxonomies: results[2],
-                category: results[3]
             }
             
 
@@ -163,8 +93,4 @@ module.exports = {
         }
         );
     }
-
-
-
-
 };
