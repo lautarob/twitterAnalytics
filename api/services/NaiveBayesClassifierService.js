@@ -1,6 +1,6 @@
 // NaiveBayesClassifierService.js - in api/services
 
-var NaiveBayesClassifier = require('NaiveBayesClassifier')
+var NaiveBayesClassifier = require('naivebayesclassifier')
 var tokenizerFunction = function(text) { 
     return text.split(',');
 };
